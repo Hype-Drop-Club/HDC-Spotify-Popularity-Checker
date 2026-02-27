@@ -27,7 +27,7 @@ st.markdown(f"""
     h1 {{
         color: #EE631D !important;
     }}
-    h2, h3, p, span, label {{
+    h2, h3, p, span, label, .stMetric {{
         color: #F9F7EE !important;
     }}
     hr {{
@@ -40,6 +40,22 @@ st.markdown(f"""
     .stTextArea textarea {{
         color: #F9F7EE !important;
         background-color: #3D3D3D !important;
+    }}
+    /* Button Styles */
+    div.stButton > button {{
+        background-color: #EE631D !important;
+        color: #F9F7EE !important;
+        border: none !important;
+    }}
+    div.stButton > button:hover {{
+        background-color: #d1561a !important;
+        color: #F9F7EE !important;
+    }}
+    /* Download link button specific styling */
+    div.stDownloadButton > button {{
+        background-color: #EE631D !important;
+        color: #F9F7EE !important;
+        border: none !important;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -83,33 +99,3 @@ if st.button("🚀 Fetch Popularity Scores"):
                                     "Artist": track['artists'][0]['name'],
                                     "Spotify ID": track['id']
                                 })
-                    except Exception as e:
-                        st.error(f"Error fetching batch: {e}")
-
-                if results:
-                    df = pd.DataFrame(results)
-                    st.markdown("<hr>", unsafe_allow_html=True)
-                    m1, m2, m3 = st.columns(3)
-                    m1.metric("Total Tracks Found", len(df))
-                    m2.metric("Average Popularity", f"{int(df['Rank'].mean())}/100")
-                    m3.metric("Highest Rank", df['Rank'].max())
-
-                    st.dataframe(df.sort_values(by="Rank", ascending=False), use_container_width=True)
-                    
-                    csv = df.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="📩 Download Results as CSV",
-                        data=csv,
-                        file_name="spotify_track_analysis.csv",
-                        mime="text/csv"
-                    )
-                else:
-                    st.error("Could not find data for these tracks.")
-        else:
-            st.error("❌ No valid Spotify track links detected.")
-    else:
-        st.warning("⚠️ Please paste some links first!")
-
-# --- FOOTER ---
-st.markdown("<hr>", unsafe_allow_html=True)
-st.caption("©️ 2026 Developed for subscribers. Data provided by Spotify Web API. Not affiliated with Spotify AB.")
