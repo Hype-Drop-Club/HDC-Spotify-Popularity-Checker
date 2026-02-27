@@ -17,6 +17,33 @@ except Exception as e:
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="Hype Drop Club", page_icon="🩸", layout="wide")
 
+# --- CUSTOM THEMEING ---
+st.markdown(f"""
+    <style>
+    .stApp {{
+        background-color: #2B2B2B;
+        color: #F9F7EE;
+    }}
+    h1 {{
+        color: #EE631D !important;
+    }}
+    h2, h3, p, span, label {{
+        color: #F9F7EE !important;
+    }}
+    hr {{
+        border: 1px solid #EE631D !important;
+    }}
+    .stMarkdown p {{
+        color: #F9F7EE !important;
+    }}
+    /* Input box text color */
+    .stTextArea textarea {{
+        color: #F9F7EE !important;
+        background-color: #3D3D3D !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
 # --- HEADER & BRANDING ---
 st.title("Hype Drop Club 🩸")
 st.markdown("### Bulk Spotify Popularity Score Checker")
@@ -30,25 +57,20 @@ with st.expander("ℹ️ How to use & Limits", expanded=True):
     """)
 
 # --- MAIN INTERFACE ---
-# We removed the columns here so the text box takes up the full width for a cleaner look
 user_input = st.text_area("📋 Paste Spotify URLs here:", height=300, placeholder="https://open.spotify.com/track/...")
 
 if st.button("🚀 Fetch Popularity Scores"):
     if user_input:
-        # Extract Track IDs using Regular Expressions
         links = user_input.split('\n')
         track_ids = [re.search(r"track/([a-zA-Z0-9]+)", l).group(1) for l in links if re.search(r"track/([a-zA-Z0-9]+)", l)]
         
-        # --- THE 500 LIMIT HARD STOP ---
         if len(track_ids) > 500:
             st.error(f"❌ **Too many tracks!** You pasted {len(track_ids)} links. Please limit your search to **500 tracks** at a time.")
             st.stop()
         
         if track_ids:
-            with st.spinner('🔍 Analyzing tracks... this usually takes 2-5 seconds...'):
+            with st.spinner('🔍 Analyzing tracks...'):
                 results = []
-                
-                # BATCHING
                 for i in range(0, len(track_ids), 50):
                     batch = track_ids[i:i+50]
                     try:
@@ -66,18 +88,14 @@ if st.button("🚀 Fetch Popularity Scores"):
 
                 if results:
                     df = pd.DataFrame(results)
-                    
-                    # --- SUMMARY METRICS ---
-                    st.divider()
+                    st.markdown("<hr>", unsafe_allow_html=True)
                     m1, m2, m3 = st.columns(3)
                     m1.metric("Total Tracks Found", len(df))
                     m2.metric("Average Popularity", f"{int(df['Rank'].mean())}/100")
                     m3.metric("Highest Rank", df['Rank'].max())
 
-                    # --- DATA TABLE ---
                     st.dataframe(df.sort_values(by="Rank", ascending=False), use_container_width=True)
                     
-                    # --- DOWNLOAD BUTTON ---
                     csv = df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="📩 Download Results as CSV",
@@ -88,10 +106,10 @@ if st.button("🚀 Fetch Popularity Scores"):
                 else:
                     st.error("Could not find data for these tracks.")
         else:
-            st.error("❌ No valid Spotify track links detected. Make sure the URLs contain 'track/'.")
+            st.error("❌ No valid Spotify track links detected.")
     else:
         st.warning("⚠️ Please paste some links first!")
 
 # --- FOOTER ---
-st.divider()
+st.markdown("<hr>", unsafe_allow_html=True)
 st.caption("©️ 2026 Developed for subscribers. Data provided by Spotify Web API. Not affiliated with Spotify AB.")
