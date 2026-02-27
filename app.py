@@ -15,11 +15,11 @@ except Exception as e:
     st.stop()
 
 # --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="Track Analytics Pro", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Hype Drop Club", page_icon="🩸", layout="wide")
 
 # --- HEADER & BRANDING ---
-st.title("📊 Subscriber Track Analytics")
-st.markdown("### Get real-time Spotify Popularity Scores in bulk.")
+st.title("Hype Drop Club 🩸")
+st.markdown("### Bulk Spotify Popularity Score Checker")
 
 # --- SIDEBAR / INFO ---
 with st.expander("ℹ️ How to use & Limits", expanded=True):
@@ -30,13 +30,8 @@ with st.expander("ℹ️ How to use & Limits", expanded=True):
     """)
 
 # --- MAIN INTERFACE ---
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    user_input = st.text_area("📋 Paste Spotify URLs here:", height=300, placeholder="https://open.spotify.com/track/...")
-
-with col2:
-    st.info("### 💡 What is Popularity?\nSpotify's score is calculated by an algorithm that considers the **total number of plays** a track has had and **how recent** those plays are.")
+# We removed the columns here so the text box takes up the full width for a cleaner look
+user_input = st.text_area("📋 Paste Spotify URLs here:", height=300, placeholder="https://open.spotify.com/track/...")
 
 if st.button("🚀 Fetch Popularity Scores"):
     if user_input:
