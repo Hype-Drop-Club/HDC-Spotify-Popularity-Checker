@@ -46,14 +46,14 @@ if st.button("🚀 Fetch Popularity Scores"):
         
         # --- THE 500 LIMIT HARD STOP ---
         if len(track_ids) > 500:
-            st.error(f"❌ **Too many tracks!** You pasted {len(track_ids)} links. Please limit your search to **500 tracks** at a time to keep the tool fast for everyone.")
+            st.error(f"❌ **Too many tracks!** You pasted {len(track_ids)} links. Please limit your search to **500 tracks** at a time.")
             st.stop()
         
         if track_ids:
             with st.spinner('🔍 Analyzing tracks... this usually takes 2-5 seconds...'):
                 results = []
                 
-                # BATCHING: Spotify allows 50 tracks per request (10 calls for 500 tracks)
+                # BATCHING
                 for i in range(0, len(track_ids), 50):
                     batch = track_ids[i:i+50]
                     try:
@@ -80,11 +80,23 @@ if st.button("🚀 Fetch Popularity Scores"):
                     m3.metric("Highest Rank", df['Rank'].max())
 
                     # --- DATA TABLE ---
-                    # Sorted by Rank (highest first)
                     st.dataframe(df.sort_values(by="Rank", ascending=False), use_container_width=True)
                     
                     # --- DOWNLOAD BUTTON ---
                     csv = df.to_csv(index=False).encode('utf-8')
                     st.download_button(
                         label="📩 Download Results as CSV",
-                        data=csv
+                        data=csv,
+                        file_name="spotify_track_analysis.csv",
+                        mime="text/csv"
+                    )
+                else:
+                    st.error("Could not find data for these tracks.")
+        else:
+            st.error("❌ No valid Spotify track links detected. Make sure the URLs contain 'track/'.")
+    else:
+        st.warning("⚠️ Please paste some links first!")
+
+# --- FOOTER ---
+st.divider()
+st.caption("©️ 2026 Developed for subscribers. Data provided by Spotify Web API. Not affiliated with Spotify AB.")
